@@ -1,4 +1,6 @@
 
+import 'package:flutter_weather/Utils/CollectionUtils.dart';
+
 class City{
   static const String CATEGORY_CITY = "city";
   static const String CATEGORY_ADD = "add";
@@ -41,16 +43,16 @@ class City{
         this.categoy = CATEGORY_ADD;
 
   City.fromResponse(dynamic obj):
-      this.cid = obj['cid'],
-      this.location = obj['location'],
-      this.parentCity = obj['parent_city'],
-      this.adminArea = obj['admin_area'],
-      this.country = obj['cnty'],
-      this.lat = obj['lat'],
-      this.lon = obj['lon'],
-      this.timezone = obj['tz'],
-      this.type = obj['type'],
-      this.categoy = CATEGORY_CITY;
+        this.cid = obj['cid'],
+        this.location = obj['location'],
+        this.parentCity = obj['parent_city'],
+        this.adminArea = obj['admin_area'],
+        this.country = obj['cnty'],
+        this.lat = obj['lat'],
+        this.lon = obj['lon'],
+        this.timezone = obj['tz'],
+        this.type = obj['type'],
+        this.categoy = CATEGORY_CITY;
 
 }
 
@@ -71,7 +73,14 @@ class CitySearch{
   }
 
   int size(){
+    if(itemList == null){
+      return 0;
+    }
     return itemList.length;
+  }
+
+  bool isEmpty(){
+    return CollectionUtils.isEmpty(itemList);
   }
 
   CitySearch.fromResponse(dynamic response){

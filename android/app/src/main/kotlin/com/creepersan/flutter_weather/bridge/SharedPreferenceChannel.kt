@@ -25,7 +25,7 @@ class SharedPreferenceChannel : MethodChannel.MethodCallHandler{
 
     private val mPrefMap = HashMap<String, SharedPreferences>()
 
-    override fun onMethodCall(call: MethodCall?, result: MethodChannel.Result?) {
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         call ?: return
         result ?: return
         when(call.method){

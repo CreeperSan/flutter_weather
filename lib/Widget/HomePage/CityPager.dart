@@ -4,6 +4,7 @@ import 'package:flutter_weather/Widget/HomePage/Card/CityCityCard.dart';
 import 'package:flutter_weather/Bean/City.dart';
 import 'package:flutter_weather/Widget/HomePage/BasePager.dart';
 import 'package:flutter_weather/Widget/HomePage/WeatherPager.dart';
+import 'package:flutter_weather/Page/SearchPage.dart';
 
 class CityPager extends BasePager{
 
@@ -66,17 +67,23 @@ class CityPagerState extends State<CityPager>  with AutomaticKeepAliveClientMixi
           weatherPager.city,
           weatherPager.citySearchKeyword,
           onTap: () => {
-            print("city")
+            _onAddCityClick(weatherPager)
           }
       ));
     }
     // 添加城市 卡片
     resultList.add(CityCityCard.addCityCard(
-        onTap: () => {
-          print("addCity")
-        }
+        onTap: () => _onCityClick()
     ));
     return resultList;
+  }
+
+  void _onAddCityClick(WeatherPager pager){
+
+  }
+
+  void _onCityClick(){
+    Navigator.push(context, MaterialPageRoute(builder: (context) => SearchPage()));
   }
 
   @override
