@@ -1,4 +1,4 @@
-
+import 'dart:convert';
 import 'package:flutter_weather/Utils/CollectionUtils.dart';
 
 class City{
@@ -54,6 +54,20 @@ class City{
         this.type = obj['type'],
         this.categoy = CATEGORY_CITY;
 
+  Map toJson(){
+    return {
+      'cid' : cid,
+      'location' : location,
+      'parent_city' : parentCity,
+      'admin_area' : adminArea,
+      'cnty' : country,
+      'lat' : lat,
+      'lon' : lon,
+      'tz' : timezone,
+      'type' : type,
+    };
+  }
+
 }
 
 class CitySearch{
@@ -90,6 +104,24 @@ class CitySearch{
         itemList.add(City.fromResponse(responseItem));
       }catch(e){}
     }
+  }
+
+  String toCacheJsonString(){
+    List<dynamic> cacheJson = [];
+    itemList.forEach((city)=>{
+      cacheJson.add({
+        'cid' : city.cid,
+        'location' : city.location,
+        'parent_city' : city.parentCity,
+        'admin_area' : city.adminArea,
+        'cnty' : city.country,
+        'lat' : city.lat,
+        'lon' : city.lon,
+        'tz' : city.timezone,
+        'type' : city.type,
+      })
+    });
+    return JsonEncoder().convert(itemList);
   }
 
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_weather/Bean/City.dart';
-import 'package:flutter_weather/Bean/HomePage/CityWeather.dart';
+import 'package:flutter_weather/Bean/CityWeather.dart';
 
 class CityCityCard extends StatelessWidget{
    static const TYPE_ADD = 0;

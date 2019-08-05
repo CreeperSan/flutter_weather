@@ -3,6 +3,8 @@ import 'package:flutter_weather/Widget/HomePage/BasePager.dart';
 
 class PagerIndicator extends StatelessWidget {
 
+  static const HEIGHT = 32.0;
+
   int page;
   List<BasePager> pagerList;
 

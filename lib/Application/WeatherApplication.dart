@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_weather/Page/HomePage.dart';
+import 'package:flutter_weather/Page/BootPage.dart';
 
 class WeatherApplication extends StatelessWidget {
   @override
@@ -9,7 +9,7 @@ class WeatherApplication extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(),
+      home: BootPage(),
     );
   }
 }

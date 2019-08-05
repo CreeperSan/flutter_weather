@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_weather/Utils/StringUtils.dart';
 import 'package:flutter_weather/Manager/NetworkManager.dart';
@@ -6,6 +7,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_weather/Network/Response/SearchCityResponse.dart';
 import 'package:flutter_weather/Bean/City.dart';
 import 'package:flutter_weather/Static/RecommendCity.dart';
+import 'package:flutter_weather/Widget/SearchPage/SearchPageItem.dart';
+import 'package:flutter_weather/Manager/CacheManager.dart';
 
 class SearchPage extends StatefulWidget{
 
@@ -22,6 +25,7 @@ class SearchPage extends StatefulWidget{
 
 class SearchPageState extends State<SearchPage>{
   TextEditingController _searchTextEditController = TextEditingController();
+  CacheManager cacheManager = CacheManager.getInstance();
   CitySearch citySearch;
 
   @override
@@ -166,52 +170,12 @@ class SearchPageState extends State<SearchPage>{
     return Expanded(
       child: ListView.builder(
           itemCount: _getCitySearch().size(),
-          itemExtent: 72,
+          itemExtent: SearchPageItem.HEIGHT,
           itemBuilder: (context, index){
-            City city = _getCitySearch().get(index);
-            return Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: 16.0
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(
-                      right: 8.0
-                    ),
-                    child: Icon(Icons.location_city,
-                      size: 48.0,
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(city.location,
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16.0
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(
-                              top: 6.0
-                          ),
-                          child: Text("${city.country} - ${city.adminArea} - ${city.parentCity}",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12.0
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            );
+            final City city = _getCitySearch().get(index);
+            return SearchPageItem(city, ()=>{
+              _onCityTap(city)
+            });
           }
       ),
     );
@@ -301,5 +265,89 @@ class SearchPageState extends State<SearchPage>{
     _searchResult();
   }
 
+  void _onCityTap(City city){
+    showDialog(
+      context: context,
+      builder:(dialogContext){
+        return AlertDialog(
+          title: Text('添加城市'),
+          content: Text('要添加城市 ${city.location} 吗？'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('添加'),
+              onPressed: (){
+                Navigator.of(dialogContext).pop();
+                _addCity(city);
+              },
+            ),
+            FlatButton(
+              child: Text('取消'),
+              onPressed: (){
+                Navigator.of(dialogContext).pop();
+              },
+            )
+          ],
+        );
+      }
+    );
+    print('点击了 ${city.location}');
+  }
+
+  void _addCity(City city) async {
+    // 提示
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext){
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: AlertDialog(
+            title: Text('添加城市'),
+            content: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                CircularProgressIndicator(),
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 16.0
+                  ),
+                  child: Text('正在添加城市 ${city.location}'),
+                )
+              ],
+            ),
+          ),
+        );
+      }
+    );
+    // 添加
+    try{
+      await cacheManager.addCity(city);
+      Navigator.of(context).pop();
+      simpleAlert("添加成功", '城市 ${city.location} 添加成功');
+    }catch(e){
+      Navigator.of(context).pop();
+      simpleAlert("添加失败", '城市 ${city.location} 添加失败');
+    }
+  }
+
+  void simpleAlert(String title, String content){
+    showDialog(
+      context: context,
+      builder: (dialogContext){
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("确定"),
+              onPressed: (){
+                Navigator.of(dialogContext).pop();
+              },
+            )
+          ],
+        );
+      }
+    );
+  }
 
 }

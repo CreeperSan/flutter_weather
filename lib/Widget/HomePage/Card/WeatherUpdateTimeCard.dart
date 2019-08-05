@@ -13,7 +13,7 @@ class WeatherUpdateTimeCard extends StatelessWidget{
     return Padding(
       padding: EdgeInsets.symmetric(
         vertical: 2.0,
-        horizontal: 16.0
+        horizontal: 2.0
       ),
       child: Text( _getUpdateText(),
         style: TextStyle(
