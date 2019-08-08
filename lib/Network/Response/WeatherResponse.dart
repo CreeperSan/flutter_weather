@@ -19,6 +19,7 @@ class WeatherResponse extends BaseResponse{
   @override
   parse() {
     var json = this.response.data;
+    print(json);
     var heWeatherJsonArray = json['HeWeather6'];
     var heWeatherJson = heWeatherJsonArray[0];
     // 城市

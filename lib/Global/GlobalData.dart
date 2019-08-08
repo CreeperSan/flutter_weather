@@ -38,5 +38,27 @@ class GlobalData{
     return cityList;
   }
 
+  CityWeather getWeatherByCityID(String cid){
+    if(_globalCityMap.containsKey(cid)){
+      return _globalCityMap[cid];
+    }
+    return CityWeather();
+  }
+
+  void setCityWeatherByCityID(String cid, CityWeather cityWeather){
+    printCache();
+    _globalCityMap[cid] = cityWeather;
+    print(cityWeather);
+  }
+
+  void printCache(){
+    String t = "===========================\n";
+    t = t + "缓存大小 -> ${_globalCityMap.length}\n";
+    _globalCityMap.keys.forEach((key){
+      t = t + "【$key】 ${_globalCityMap[key].toString()}\n";
+    });
+    t = t + "==============================";
+    print(t);
+  }
 
 }

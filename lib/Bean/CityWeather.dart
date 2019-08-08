@@ -25,4 +25,9 @@ class CityWeather{
     this.updateTime
   });
 
+  @override
+  String toString() {
+    return "【${city!=null ? city.cid : "null" }】${city!=null ? city.location : "null" } 更新=${updateTime!=null ? updateTime.localTime : "null" } 温度=${now!=null ? now.tmp : "null" }  天气=${now!=null ? now.condTxt : "null" }";
+  }
+
 }

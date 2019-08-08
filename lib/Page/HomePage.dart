@@ -37,7 +37,7 @@ class HomePage extends StatefulWidget {
     _pagerList.add(cityPager);
     List<CityWeather> cityList = globalData.getCityWeatherList();
     cityList.forEach((city)=>{
-      _pagerList.add(WeatherPager.fromCityWeather(city))
+      _pagerList.add(WeatherPager.fromCityID(city.city.cid))
     });
   }
 

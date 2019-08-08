@@ -19,25 +19,15 @@ import 'package:flutter_weather/Utils/StringUtils.dart';
 import 'package:flutter_weather/Global/GlobalData.dart';
 
 class WeatherPager extends BasePager{
-  String citySearchKeyword;
-  CityWeather cityWeather;
   NetworkManager _networkManager = NetworkManager.getInstance();
   ConfigManager _configManager = ConfigManager.getInstance();
+  final String cid;
 
-  WeatherPager.fromCityWeather(CityWeather city){
-    this.cityWeather = city;
-    if(this.cityWeather == null){
-      this.cityWeather = CityWeather();
-    }
-
-    state = _WeatherPagerState(cityWeather);
-  }
-
-  _WeatherPagerState state ;
+  WeatherPager.fromCityID(this.cid);
 
   @override
   State<StatefulWidget> createState() {
-    return state;
+    return _WeatherPagerState();
   }
 
   @override
@@ -47,18 +37,16 @@ class WeatherPager extends BasePager{
 
   @override
   String getName() {
-    if(cityWeather.city == null || StringUtils.isEmpty(cityWeather.city.location)){
-      return this.citySearchKeyword;
+    try{
+      return GlobalData.getInstance().getWeatherByCityID(cid).city.location;
+    }catch(e){
+      return cid;
     }
-    return cityWeather.city.location;
   }
 
 }
 
 class _WeatherPagerState extends State<WeatherPager> with AutomaticKeepAliveClientMixin{
-  CityWeather cityWeather;
-
-  _WeatherPagerState(this.cityWeather);
 
   @override
   bool get wantKeepAlive => true;
@@ -66,6 +54,12 @@ class _WeatherPagerState extends State<WeatherPager> with AutomaticKeepAliveClie
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    CityWeather cityWeather;
+    if(widget.cid.isNotEmpty){
+      cityWeather = GlobalData.getInstance().getWeatherByCityID(widget.cid);
+    }else{
+      cityWeather = CityWeather();
+    }
     return Container(
       child: RefreshIndicator(
         onRefresh: _onRefresh,
@@ -87,23 +81,34 @@ class _WeatherPagerState extends State<WeatherPager> with AutomaticKeepAliveClie
   }
 
   Future<Null> _onRefresh() async {
-    Response responseWeather = await widget._networkManager.getWeather(widget._configManager.getKey(), widget.citySearchKeyword);
+    Response responseWeather = await widget._networkManager.getWeather(widget._configManager.getKey(), widget.cid);
     WeatherResponse weatherResponse = WeatherResponse.fromResponse(responseWeather);
-    Response responseAir = await widget._networkManager.getAirQuality(widget._configManager.getKey(), widget.citySearchKeyword);
+    Response responseAir = await widget._networkManager.getAirQuality(widget._configManager.getKey(), widget.cid);
     AirResponse airResponse = AirResponse.fromResponse(responseAir);
+    GlobalData globalData = GlobalData.getInstance();
+    CityWeather cityWeather = globalData.getWeatherByCityID(widget.cid);
+    cityWeather.city = weatherResponse.city;
+    cityWeather.updateTime = weatherResponse.updateTime;
+    cityWeather.now = weatherResponse.now;
+    cityWeather.dailyForecast = weatherResponse.dailyForecast;
+    cityWeather.lifeStyle = weatherResponse.lifeStyle;
+    cityWeather.air = airResponse.air;
+    cityWeather.airStation = airResponse.airStation;
+    globalData.setCityWeatherByCityID(widget.cid, cityWeather);
     setState(() {
-      cityWeather.city = weatherResponse.city;
-      cityWeather.updateTime = weatherResponse.updateTime;
-      cityWeather.now = weatherResponse.now;
-      cityWeather.dailyForecast = weatherResponse.dailyForecast;
-      cityWeather.lifeStyle = weatherResponse.lifeStyle;
-      cityWeather.air = airResponse.air;
-      cityWeather.airStation = airResponse.airStation;
+      widget.cid;
     });
   }
 
   List<Widget> _getContentWidgetList(){
     List<Widget> resultList = [];
+    CityWeather cityWeather = GlobalData.getInstance().getWeatherByCityID(widget.cid);
+    print('---------------');
+    print(widget);
+    print(widget.cid);
+    print(cityWeather);
+    print("cityWeather更新 ${cityWeather.toString()}");
+    print('---------------');
     resultList.add(WeatherUpdateTimeCard(cityWeather.updateTime));  // 更新时间
     resultList.add(WeatherHeaderCard(cityWeather.city, cityWeather.now));  // 头部
     // 实况天气
@@ -130,11 +135,6 @@ class _WeatherPagerState extends State<WeatherPager> with AutomaticKeepAliveClie
     if(cityWeather.airStation != null){
       resultList.add(WeatherAirStationCard(cityWeather.airStation));
     }
-    print("size -> ${widget}");
-    print("size -> ${cityWeather}");
-    print("size -> ${cityWeather.city}");
-    print("size -> ${cityWeather.now}");
-    print("size -> ${resultList.length}");
     return resultList;
   }
 

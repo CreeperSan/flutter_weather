@@ -5,6 +5,7 @@ import 'package:flutter_weather/Widget/HomePage/BasePager.dart';
 import 'package:flutter_weather/Widget/HomePage/WeatherPager.dart';
 import 'package:flutter_weather/Page/SearchPage.dart';
 import 'package:flutter_weather/Utils/UISizeUtils.dart';
+import 'package:flutter_weather/Global/GlobalData.dart';
 
 class CityPager extends BasePager{
 
@@ -65,13 +66,14 @@ class CityPagerState extends State<CityPager>  with AutomaticKeepAliveClientMixi
   List<Widget> _getCityCardList(){
     List<Widget> resultList = [];
     // 城市 卡片
+    GlobalData globalData = GlobalData.getInstance();
     for(int i=0; i<_tmpWeatherPagerList.length; i++){
       WeatherPager weatherPager = _tmpWeatherPagerList[i];
       resultList.add(CityCityCard(
-          weatherPager.cityWeather.city,
-          weatherPager.citySearchKeyword,
+          globalData.getWeatherByCityID(weatherPager.cid).city,
+          weatherPager.cid,
           onTap: () => {
-            _onCityClick(weatherPager.cityWeather, i)
+            _onCityClick(globalData.getWeatherByCityID(weatherPager.cid), i)
           }
       ));
     }
