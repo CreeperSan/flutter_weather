@@ -9,9 +9,10 @@ class CityCityCard extends StatelessWidget{
   String title;
   String subtitle;
   Function onTap;
+  Function onLongPress;
   final int type;
 
-  CityCityCard(City city, String defaultName,{ this.onTap }) : this.type = TYPE_CITY {
+  CityCityCard(City city, String defaultName,{ this.onTap, this.onLongPress }) : this.type = TYPE_CITY {
     if(city != null){
       this.title = city.location;
       this.subtitle = "${city.country} - ${city.adminArea} - ${city.parentCity}";
@@ -31,6 +32,7 @@ class CityCityCard extends StatelessWidget{
 
     return GestureDetector(
       onTap: onTap,
+      onLongPress: onLongPress,
       child: Padding(
         padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         child: Card(

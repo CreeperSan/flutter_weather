@@ -33,7 +33,7 @@ class HomePage extends StatefulWidget {
     }
     index = 0;
     // 加载数据
-    CityPager cityPager = CityPager(_pagerList, state.onCityClick);
+    CityPager cityPager = CityPager(state.onCityClick);
     _pagerList.add(cityPager);
     List<CityWeather> cityList = globalData.getCityWeatherList();
     cityList.forEach((city)=>{

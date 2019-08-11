@@ -30,4 +30,11 @@ class CityWeather{
     return "【${city!=null ? city.cid : "null" }】${city!=null ? city.location : "null" } 更新=${updateTime!=null ? updateTime.localTime : "null" } 温度=${now!=null ? now.tmp : "null" }  天气=${now!=null ? now.condTxt : "null" }";
   }
 
+  String getCid(){
+    if(city == null){
+      return "【No ID】";
+    }
+    return city.cid;
+  }
+
 }

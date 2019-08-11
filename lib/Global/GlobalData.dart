@@ -46,9 +46,15 @@ class GlobalData{
   }
 
   void setCityWeatherByCityID(String cid, CityWeather cityWeather){
-    printCache();
+//    printCache();
     _globalCityMap[cid] = cityWeather;
-    print(cityWeather);
+//    print(cityWeather);
+  }
+
+  void removeCityWeatherByCityID(String cid){
+    _globalCityMap.removeWhere((String key, CityWeather a){
+      return key == cid;
+    });
   }
 
   void printCache(){

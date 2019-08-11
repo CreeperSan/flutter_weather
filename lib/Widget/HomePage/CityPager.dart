@@ -9,14 +9,9 @@ import 'package:flutter_weather/Global/GlobalData.dart';
 
 class CityPager extends BasePager{
 
-  List<BasePager> _cityWeatherList;
   void Function(CityWeather, int) onCityClick;
 
-  CityPager(this._cityWeatherList, this.onCityClick){
-    if(this._cityWeatherList == null){
-      this._cityWeatherList = [];
-    }
-  }
+  CityPager(this.onCityClick);
 
   @override
   String getName() {
@@ -37,44 +32,33 @@ class CityPager extends BasePager{
 
 class CityPagerState extends State<CityPager>  with AutomaticKeepAliveClientMixin{
   void Function(CityWeather, int) onCityClick;
-  List<WeatherPager> _tmpWeatherPagerList = [];
 
   CityPagerState(this.onCityClick);
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    _initWeatherPagerList();
     return ListView(
       children: _getCityCardList(),
     );
-  }
-
-  void _initWeatherPagerList(){
-    if(_tmpWeatherPagerList == null){
-      _tmpWeatherPagerList = [];
-    }else{
-      _tmpWeatherPagerList.clear();
-    }
-    for(BasePager item in widget._cityWeatherList){
-      if(item is WeatherPager){
-        _tmpWeatherPagerList.add(item);
-      }
-    }
   }
 
   List<Widget> _getCityCardList(){
     List<Widget> resultList = [];
     // 城市 卡片
     GlobalData globalData = GlobalData.getInstance();
-    for(int i=0; i<_tmpWeatherPagerList.length; i++){
-      WeatherPager weatherPager = _tmpWeatherPagerList[i];
+    List<CityWeather> cityWeatherList = globalData.getCityWeatherList();
+    for(int i=0; i<cityWeatherList.length; i++){
+      CityWeather cityWeather = cityWeatherList[i];
       resultList.add(CityCityCard(
-          globalData.getWeatherByCityID(weatherPager.cid).city,
-          weatherPager.cid,
+          globalData.getWeatherByCityID(cityWeather.getCid()).city,
+        cityWeather.getCid(),
           onTap: () => {
-            _onCityClick(globalData.getWeatherByCityID(weatherPager.cid), i)
-          }
+            _onCityClick(globalData.getWeatherByCityID(cityWeather.getCid()), i)
+          },
+          onLongPress: ()=>{
+            _onCityLongClick(i, cityWeather.getCid())
+          },
       ));
     }
     // 添加城市 卡片
@@ -86,6 +70,40 @@ class CityPagerState extends State<CityPager>  with AutomaticKeepAliveClientMixi
 
   void _onCityClick(CityWeather pager, int index){
     onCityClick(pager, index);
+  }
+
+  void _onCityLongClick(int index, String cid){
+    showDialog(
+      context: context,
+      builder: (BuildContext context){
+        GlobalData globalData = GlobalData.getInstance();
+        CityWeather cityWeather = globalData.getWeatherByCityID(cid);
+        String cityName = cid;
+        if(cityWeather.city != null){
+          cityName = cityWeather.city.location;
+        }
+        return AlertDialog(
+          title: Text("删除城市"),
+          content: Text("确定删除城市 $cityName 吗？"),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("确定"),
+              onPressed: (){
+                globalData.removeCityWeatherByCityID(cid);
+                Navigator.of(context).pop();
+                setState(() {});
+              },
+            ),
+            FlatButton(
+              child: Text("取消"),
+              onPressed: (){
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      }
+    );
   }
 
   void _onAddCityClick(){
